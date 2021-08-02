@@ -55,3 +55,11 @@ open class OnOnceClickListener(
         mLastTime = currentTimeMillis
     }
 }
+
+fun View.setOnOnceClickListener(
+    strategy: OnOnceClickListener.Strategy = OnOnceClickListener.Strategy.FIRST,
+    interval: Long = 300,
+    onOnceClick: (view: View) -> Unit
+) {
+    setOnClickListener(OnOnceClickListener(strategy, interval, onOnceClick))
+}
