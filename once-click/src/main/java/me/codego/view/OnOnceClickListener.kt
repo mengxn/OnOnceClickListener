@@ -15,8 +15,20 @@ open class OnOnceClickListener(
 ) : View.OnClickListener {
 
     enum class Strategy {
+        /**
+         * 仅第一次有效
+         */
         FIRST,
-        LAST
+
+        /**
+         * 仅最后一次有效
+         */
+        LAST,
+
+        /**
+         * 对快速事件进行截流
+         */
+        THROTTLE,
     }
 
     companion object {
@@ -42,6 +54,7 @@ open class OnOnceClickListener(
                 if (currentTimeMillis - mLastTime > interval) {
                     onOnceClick(v)
                 }
+                mLastTime = currentTimeMillis
             }
             Strategy.LAST -> {
                 if (this::mCallback.isInitialized) {
@@ -50,9 +63,15 @@ open class OnOnceClickListener(
                     mCallback = Runnable { onOnceClick(v) }
                 }
                 v.postDelayed(mCallback, interval)
+                mLastTime = currentTimeMillis
+            }
+            Strategy.THROTTLE -> {
+                if (currentTimeMillis - mLastTime > interval) {
+                    onOnceClick(v)
+                    mLastTime = currentTimeMillis
+                }
             }
         }
-        mLastTime = currentTimeMillis
     }
 }
 
@@ -62,4 +81,11 @@ fun View.setOnOnceClickListener(
     onOnceClick: (view: View) -> Unit
 ) {
     setOnClickListener(OnOnceClickListener(strategy, interval, onOnceClick))
+}
+
+fun View.setOnOnceClickListener(
+    interval: Long = 300,
+    onOnceClick: (view: View) -> Unit
+) {
+    setOnClickListener(OnOnceClickListener(OnOnceClickListener.Strategy.FIRST, interval, onOnceClick))
 }
