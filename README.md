@@ -14,12 +14,12 @@ allprojects {
 # module build.gralde
 dependencies {
     ...
-    implementation 'com.github.mengxn:OnceClick:1.1'
+    implementation 'com.github.mengxn:OnceClick:1.2'
 }
 ```
 
 ## 使用说明
-### 1. 普通模式(默认第一次有效)
+### 1. 普通模式(默认仅第一次有效)
 ``` kotlin
 loginBtn.setOnOnceClickListener {
     // do something
@@ -33,7 +33,14 @@ loginBtn.setOnOnceClickListener(OnOnceClickListener.Strategy.LAST) {
 }
 ```
 
-### 3. 设置间隔时间
+### 3. 事件截流
+``` kotlin
+loginBtn.setOnOnceClickListener(OnOnceClickListener.Strategy.THROTTLE, 500) {
+    // do something
+}
+```
+
+### 4. 设置间隔时间
 ``` kotlin
 loginBtn.setOnOnceClickListener(interval = 500) {
     // do something
